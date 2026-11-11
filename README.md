@@ -15,6 +15,11 @@ An enterprise-grade, multi-node homelab infrastructure designed around GitOps au
 
 ## Architecture Overview
 
+![HomeLab Architecture Diagram](docs/assets/architecture.png)
+
+<details>
+<summary><b>View Interactive Mermaid Topology</b></summary>
+
 ```mermaid
 flowchart TD
     subgraph Mobile["Mobile Endpoint"]
@@ -46,6 +51,8 @@ flowchart TD
     ArgoCD -->|"Continuous GitOps Sync"| Apps
     OverlayMesh -->|"Filtered Mesh DNS"| Pihole
 ```
+
+</details>
 
 ---
 
