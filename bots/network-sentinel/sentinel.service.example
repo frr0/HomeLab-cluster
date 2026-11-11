@@ -1,0 +1,14 @@
+[Unit]
+Description=IoT Network Sentinel & Intrusion Detection Bot
+After=network.target
+
+[Service]
+Type=simple
+User=rpi
+WorkingDirectory=/home/rpi/Admin-bot
+ExecStart=/usr/bin/python3 /home/rpi/Admin-bot/sentinel_bot.py
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

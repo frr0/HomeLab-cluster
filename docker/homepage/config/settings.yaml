@@ -1,0 +1,20 @@
+---
+title: "HomeLab Dashboard"
+background:
+  image: ""
+  opacity: 100
+theme: dark
+color: slate
+layout:
+  Core Management:
+    style: row
+    columns: 2
+  Productivity & Documents:
+    style: row
+    columns: 2
+  Personal Finance:
+    style: row
+    columns: 2
+  Telemetry & Infrastructure:
+    style: row
+    columns: 3

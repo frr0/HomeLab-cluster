@@ -1,0 +1,7 @@
+{
+  "bot_token": "123456789:ABCdefGHIjklMNOpqrsTUVwxyz_SAMPLE",
+  "webapp_dir": "/home/workstation/HomeLab-cluster/docker",
+  "allowed_user_ids": [
+    123456789
+  ]
+}

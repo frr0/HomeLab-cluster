@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud-service
+  namespace: homelab
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080
+  selector:
+    app: nextcloud
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud
+  namespace: homelab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      containers:
+      - name: nextcloud
+        image: nextcloud:apache
+        env:
+        - name: APACHE_DISABLE_REWRITE_IP
+          value: "1"
+        - name: TRUSTED_PROXIES
+          value: "127.0.0.1,10.42.0.0/16,192.168.1.100"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /var/www/html
+      volumes:
+      - name: html
+        hostPath:
+          path: /home/server/homelab-storage/nextcloud/html
+          type: DirectoryOrCreate

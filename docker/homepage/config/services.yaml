@@ -1,0 +1,44 @@
+---
+- Core Management:
+    - Headlamp:
+        icon: kubernetes.png
+        href: http://192.168.1.100/
+        description: Kubernetes Web Dashboard & Workload Shell
+    - ArgoCD:
+        icon: argocd.png
+        href: http://192.168.1.100:30200/
+        description: GitOps Continuous Delivery Engine
+
+- Productivity & Documents:
+    - Paperless-ngx:
+        icon: paperless.png
+        href: http://192.168.1.100:30082/
+        description: Document Ingestion, OCR & Archiving
+    - Nextcloud:
+        icon: nextcloud.png
+        href: http://192.168.1.100:30080/
+        description: Personal Cloud, File Sync & Notes
+
+- Personal Finance:
+    - Firefly III:
+        icon: firefly.png
+        href: http://192.168.1.100:30090/
+        description: Double-Entry Budgeting & Account Tracking
+    - Firefly Data Importer:
+        icon: firefly.png
+        href: http://192.168.1.100:30091/
+        description: Banking Statement Ingestion Engine
+
+- Telemetry & Infrastructure:
+    - Grafana:
+        icon: grafana.png
+        href: http://192.168.1.100:30030/
+        description: Metric Dashboards & Host Telemetry
+    - Cockpit:
+        icon: cockpit.png
+        href: https://192.168.1.100:9090/
+        description: Fedora Host Administration Console
+    - Pi-hole:
+        icon: pi-hole.png
+        href: http://192.168.1.20/admin/
+        description: Network-Wide DNS Sinkhole & Ad-Blocking

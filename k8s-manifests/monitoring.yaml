@@ -1,0 +1,171 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+  namespace: homelab
+spec:
+  ports:
+  - port: 9100
+    targetPort: 9100
+  selector:
+    app: node-exporter
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: homelab
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter:latest
+        args:
+        - --path.procfs=/host/proc
+        - --path.rootfs=/rootfs
+        - --path.sysfs=/host/sys
+        - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)
+        ports:
+        - containerPort: 9100
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+        - name: rootfs
+          mountPath: /rootfs
+          readOnly: true
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: rootfs
+        hostPath:
+          path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: homelab
+spec:
+  ports:
+  - port: 9090
+    targetPort: 9090
+  selector:
+    app: prometheus
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: homelab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:latest
+        args:
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --storage.tsdb.path=/prometheus
+        - --storage.tsdb.retention.time=15d
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: config
+          mountPath: /etc/prometheus/prometheus.yml
+        - name: data
+          mountPath: /prometheus
+      volumes:
+      - name: config
+        hostPath:
+          path: /home/server/homelab-storage/monitoring/prometheus.yml
+          type: File
+      - name: data
+        hostPath:
+          path: /home/server/homelab-storage/monitoring/prometheus_data
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: homelab
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30030
+  selector:
+    app: grafana
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: homelab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:latest
+        env:
+        - name: GF_SECURITY_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: homelab-secrets
+              key: GRAFANA_ADMIN_USER
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: homelab-secrets
+              key: GRAFANA_ADMIN_PASSWORD
+        - name: GF_USERS_ALLOW_SIGN_UP
+          value: "false"
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/grafana
+        - name: provisioning
+          mountPath: /etc/grafana/provisioning
+      volumes:
+      - name: data
+        hostPath:
+          path: /home/server/homelab-storage/monitoring/grafana_data
+          type: DirectoryOrCreate
+      - name: provisioning
+        hostPath:
+          path: /home/server/homelab-storage/monitoring/provisioning
+          type: DirectoryOrCreate

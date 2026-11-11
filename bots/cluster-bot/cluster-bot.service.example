@@ -1,0 +1,14 @@
+[Unit]
+Description=K3s Cluster Telegram Admin Bot
+After=network.target
+
+[Service]
+Type=simple
+User=workstation
+WorkingDirectory=/home/workstation/HomeLab-cluster/bots/cluster-bot
+ExecStart=/usr/bin/python3 /home/workstation/HomeLab-cluster/bots/cluster-bot/bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

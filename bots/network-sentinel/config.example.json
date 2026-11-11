@@ -1,0 +1,15 @@
+{
+  "bot_token": "123456789:ABCdefGHIjklMNOpqrsTUVwxyz_SAMPLE",
+  "allowed_user_ids": [
+    123456789
+  ],
+  "interface": "wlan0",
+  "subnet": "192.168.1.0/24",
+  "scan_interval_seconds": 60,
+  "anti_flapping_grace_cycles": 10,
+  "known_devices": {
+    "AA:BB:CC:11:22:33": "Fedora-Server",
+    "AA:BB:CC:44:55:66": "Workstation-ThinkPad",
+    "AA:BB:CC:77:88:99": "Smartphone-Android"
+  }
+}

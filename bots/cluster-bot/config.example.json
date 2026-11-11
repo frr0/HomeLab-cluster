@@ -1,0 +1,9 @@
+{
+  "bot_token": "123456789:ABCdefGHIjklMNOpqrsTUVwxyz_SAMPLE",
+  "allowed_user_ids": [
+    123456789
+  ],
+  "server_lan_ip": "192.168.1.100",
+  "server_tailscale_ip": "100.64.0.10",
+  "default_namespace": "homelab"
+}

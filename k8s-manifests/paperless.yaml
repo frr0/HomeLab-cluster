@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: paperless-redis
+  namespace: homelab
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: paperless-redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-redis
+  namespace: homelab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-redis
+  template:
+    metadata:
+      labels:
+        app: paperless-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paperless-service
+  namespace: homelab
+spec:
+  type: NodePort
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 30082
+  selector:
+    app: paperless-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-web
+  namespace: homelab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-web
+  template:
+    metadata:
+      labels:
+        app: paperless-web
+    spec:
+      containers:
+      - name: paperless
+        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        env:
+        - name: PAPERLESS_REDIS
+          value: redis://paperless-redis:6379
+        - name: PAPERLESS_TIME_ZONE
+          value: Europe/Rome
+        - name: PAPERLESS_URL
+          value: http://192.168.1.100:30082
+        - name: PAPERLESS_ALLOWED_HOSTS
+          value: "*"
+        - name: PAPERLESS_CSRF_ALLOWED_HOSTS
+          value: "http://localhost:30082,http://127.0.0.1:30082,http://100.64.0.10:30082,http://192.168.1.100:30082"
+        - name: PAPERLESS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: homelab-secrets
+              key: PAPERLESS_SECRET_KEY
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: data
+          mountPath: /usr/src/paperless/data
+        - name: media
+          mountPath: /usr/src/paperless/media
+        - name: export
+          mountPath: /usr/src/paperless/export
+        - name: consume
+          mountPath: /usr/src/paperless/consume
+      volumes:
+      - name: data
+        hostPath:
+          path: /home/server/homelab-storage/paperless/data
+          type: DirectoryOrCreate
+      - name: media
+        hostPath:
+          path: /home/server/homelab-storage/paperless/media
+          type: DirectoryOrCreate
+      - name: export
+        hostPath:
+          path: /home/server/homelab-storage/paperless/export
+          type: DirectoryOrCreate
+      - name: consume
+        hostPath:
+          path: /home/server/homelab-storage/paperless/consume
+          type: DirectoryOrCreate
